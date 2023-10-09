@@ -16,18 +16,37 @@
 //
 // Execute `rustlings hint quiz3` or use the `hint` watch subcommand for a hint.
 
-// I AM NOT DONE
-
-pub struct ReportCard {
-    pub grade: f32,
-    pub student_name: String,
-    pub student_age: u8,
+pub enum Grade {
+    Numeric(f32),
+    Alphabetical(String),
 }
 
-impl ReportCard {
+// 注意：这里使用了泛型参数T和PhantomData来使ReportCard结构体成为一个泛型结构体。
+// 这是因为在Rust中，如果一个泛型结构体没有使用泛型参数，那么它就不能被实例化。
+// 通过使用PhantomData，我们可以在不使用泛型参数的情况下，仍然使ReportCard成为一个泛型结构体。
+pub struct ReportCard<T> {
+    pub grade: Grade,
+    pub student_name: String,
+    pub student_age: u8,
+    phantom: std::marker::PhantomData<T>,
+}
+
+impl<T> ReportCard<T> {
     pub fn print(&self) -> String {
-        format!("{} ({}) - achieved a grade of {}",
-            &self.student_name, &self.student_age, &self.grade)
+        match &self.grade {
+            Grade::Numeric(grade) => {
+                format!(
+                    "{} ({}) - achieved a grade of {}",
+                    &self.student_name, &self.student_age, grade
+                )
+            }
+            Grade::Alphabetical(grade) => {
+                format!(
+                    "{} ({}) - achieved a grade of {}",
+                    &self.student_name, &self.student_age, grade
+                )
+            }
+        }
     }
 }
 
@@ -37,10 +56,11 @@ mod tests {
 
     #[test]
     fn generate_numeric_report_card() {
-        let report_card = ReportCard {
-            grade: 2.1,
+        let report_card: ReportCard<f32> = ReportCard {
+            grade: Grade::Numeric(2.1),
             student_name: "Tom Wriggle".to_string(),
             student_age: 12,
+            phantom: std::marker::PhantomData,
         };
         assert_eq!(
             report_card.print(),
@@ -51,10 +71,11 @@ mod tests {
     #[test]
     fn generate_alphabetic_report_card() {
         // TODO: Make sure to change the grade here after you finish the exercise.
-        let report_card = ReportCard {
-            grade: 2.1,
+        let report_card: ReportCard<String> = ReportCard {
+            grade: Grade::Alphabetical("A+".to_string()),
             student_name: "Gary Plotter".to_string(),
             student_age: 11,
+            phantom: std::marker::PhantomData,
         };
         assert_eq!(
             report_card.print(),
