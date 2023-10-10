@@ -34,9 +34,13 @@ extern "Rust" {
     fn my_demo_function_alias(a: u32) -> u32;
 }
 
-mod Foo {
+mod foo {
     // No `extern` equals `extern "Rust"`.
-    fn my_demo_function(a: u32) -> u32 {
+    // 添加#[no_mangle]可以防止Rust对符号名称进行混淆，使其可以从其他语言中调用
+    // 添加#[allow(non_snake_case)]是因为Rust函数的命名约定是snake_case，而模块Foo中的函数名my_demo_function不遵循这个约定。这个属性允许你在测试用例中使用非snake_case的函数名来调用它。
+    #[no_mangle]
+    #[allow(non_snake_case)]
+    pub fn my_demo_function(a: u32) -> u32 {
         a
     }
 }
